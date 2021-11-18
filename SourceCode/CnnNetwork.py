@@ -45,11 +45,11 @@ class CNN(nn.Module):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 #Hyperparameters
-input_size = 784 # 28x28 = 784, size of MNIST images (grayscale)
+in_channel =  1
 num_classes = 10
 learning_rate = 0.001
 batch_size = 64
-num_epochs = 1
+num_epochs = 5
 
 
 #Load Data
@@ -75,7 +75,7 @@ test_loader = DataLoader(
 
 
 #Initialize network
-model = NN(input_size=input_size, num_classes=num_classes).to(device)
+model = CNN().to(device)
 
 #loss and optimizer
 criterion = nn.CrossEntropyLoss()
@@ -88,7 +88,7 @@ for epoch in range(num_epochs):
         data = data.to(device= device)
         targets = targets.to(device = device)
         #Get to correct shape
-        data = data.reshape(data.shape[0], -1)
+
 
         #forward
         scores = model(data)
@@ -114,7 +114,7 @@ def check_accuracy(loader, model):
         for x,y in loader:
             x = x.to(device=device)
             y = y.to(device=device)
-            x = x.reshape(x.shape[0], -1)
+
             scores = model(x)
             _, predictions = scores.max(1)
             num_correct =(predictions == y).sum()
