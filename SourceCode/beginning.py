@@ -102,6 +102,7 @@ def check_accuracy(loader, model):
             num_samples = predictions.size(0)
         print(f"Got {num_correct} /{num_samples} with accuracy {float(num_correct)/float(num_samples)*100:.2f}")
         print("working on device")
+        print("ready")
     model.train()
 
 
