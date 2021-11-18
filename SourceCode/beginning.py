@@ -101,6 +101,7 @@ def check_accuracy(loader, model):
             num_correct =(predictions == y).sum()
             num_samples = predictions.size(0)
         print(f"Got {num_correct} /{num_samples} with accuracy {float(num_correct)/float(num_samples)*100:.2f}")
+        print("working")
     model.train()
 
 
