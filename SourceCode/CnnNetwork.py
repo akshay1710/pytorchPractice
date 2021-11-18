@@ -41,6 +41,14 @@ class CNN(nn.Module):
         x =  self.fc1(x)
         return x
 
+def save_checkpoint(state, filename = "my_checkpoint.pth.tar"):
+    print("=> saving checkpoint")
+    torch.save(state, filename)
+
+def load_checkpoint(checkpoint):
+    print("=> Loading CheckPoin")
+    model.load_state_dict(checkpoint['state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
 # set device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -48,8 +56,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 in_channel =  1
 num_classes = 10
 learning_rate = 0.001
-batch_size = 64
-num_epochs = 5
+batch_size = 1024
+num_epochs = 10
+load_model = True
 
 
 #Load Data
@@ -81,9 +90,18 @@ model = CNN().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 
+if load_model:
+    load_checkpoint(torch.load("my_checkpoint.pth.tar"))
+
 #Train Network
 for epoch in range(num_epochs):
+    lossed = []
+    if epoch % 3 == 0:
+        checkpoint = {'state_dict': model.state_dict(), 'optimizer': optimizer.state_dict()}
+        save_checkpoint(checkpoint)
+
     for batch_idx, (data, targets) in enumerate(train_loader):
+
         # Get
         data = data.to(device= device)
         targets = targets.to(device = device)
@@ -93,6 +111,8 @@ for epoch in range(num_epochs):
         #forward
         scores = model(data)
         loss = criterion(scores, targets)
+        lossed.append(loss.item())
+
 
         #backward
         optimizer.zero_grad()
@@ -100,6 +120,7 @@ for epoch in range(num_epochs):
 
         #gradient decent and adam step
         optimizer.step()
+    print(loss)
 
 #Check accuracy to training & test to see how good our model
 def check_accuracy(loader, model):
